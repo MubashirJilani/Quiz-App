@@ -105,7 +105,7 @@ if (userAnswer == questions[currentQuestion].correctAnswer) {
     score = score + 10
 }
 scoreElement.textContent = score
-// quizContainer.style.display = 'none'
+quizContainer.style.display = 'none'
 restartQuizButton.style.display = "block"
 resultContainer.style.display = "block"
 }
