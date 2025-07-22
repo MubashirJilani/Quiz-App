@@ -1,124 +1,251 @@
-const questions = [{
+const questions = [
+  {
+    question: "1. What is the sum of 12 + 91 ?",
+    options: [101, 102, 103, 104],
+    correctAnswer: 103
+  },
+  {
+    question: "2. Who is the second Prime Minister of Pakistan?",
+    options: ["Khawaja Nazimuddin", "Liaqat Ali Khan", "Mian Muhammad Ali", "Zulfiqar Ali Bhutto"],
+    correctAnswer: "Khawaja Nazimuddin"
+  },
+  {
+    question: "3. Which PAF Pilot shot down five enemy jets in less than a minute?",
+    options: ["Yunus Hussain", "Cecil Chaudhry", "Sarfaraz Rafiqui", "MM Alam"],
+    correctAnswer: "MM Alam"
+  },
+  {
+    question: "4. First Pakistani captain who won the world cup?",
+    options: ["Sarfaraz Ahmed", "Imran Khan", "Wasim Akram", "Younis Khan"],
+    correctAnswer: "Imran Khan"
+  },
+  {
+    question: "5. Who is the Father of Chemistry?",
+    options: ["Charles Darwin", "Albert Einstein", "Jabir Bin Hayyan", "Isaac Newton"],
+    correctAnswer: "Jabir Bin Hayyan"
+  }
+];
 
-    question: "1. What is your name",
-    options: ["Rohan", "Noman", "Mubashir", "Anus"],
-    correctAnswer: "Rohan"
-},
-{
+let currentQuestion = 0;
+let score = 0;
+let userAnswer = null;
 
-    question: "2. Which number comes next in the series?1, 4, 9, 16, 25, ?",
-    options: ["36", "30", "28", "32"],
-    correctAnswer: "36"
-},
-{
-
-    question: "3. What comes next in the sequence?A, C, E, G, ?",
-    options: ["H", "I", "J", "L"],
-    correctAnswer: "I"
-},
-{
-
-    question: "4. What is the missing number?5, 10, 20, 40, ?",
-    options: ["45", "60", "80", "100"],
-    correctAnswer: "80"
-},
-{
-    question: "5. Which one is the smallest in value?",
-    options: ["1/2", "0.3", "0.25", "3/4"],
-    correctAnswer: "0.25"
-}
-]
-let currentQuestion = 0
-let score = 0
-
+const scoreElement = document.getElementById("score");
+const nextQuestionButton = document.getElementById("nextBtn");
+const finishQuizButton = document.getElementById("finishQuiz");
+const quizContainer = document.getElementById("quiz-container");
+const restartQuizButton = document.getElementById("restartQuiz");
+const resultContainer = document.getElementById("result-container");
 
 function showQuestions() {
-let questionElement = document.getElementById("question");
-questionElement.innerHTML = questions[currentQuestion].question
+  const questionElement = document.getElementById("question");
+  const optionsElement = document.getElementById("options");
 
-let optionsElement = document.getElementById("options")
+  questionElement.innerHTML = questions[currentQuestion].question;
+  optionsElement.innerHTML = "";
 
-
-optionsElement.innerHTML = ''
- 
-
-questions[currentQuestion].options
-
-for (var i = 0; i < questions[currentQuestion].options.length; i++) {
-    optionsElement.innerHTML += `<div id="option" onClick="saveAnswer(event)" class="option">${questions[currentQuestion].options[i]}</div>`
-    // optionsElement.innerHTML += `<div onClick="saveAnswer(event)" class="option">${questions[currentQuestion].options[i]}</div>`
+  questions[currentQuestion].options.forEach(option => {
+    const optionDiv = document.createElement("div");
+    optionDiv.textContent = option;
+    optionDiv.classList.add("option");
+    optionDiv.addEventListener("click", saveAnswer);
+    optionsElement.appendChild(optionDiv);
+  });
 }
-}
-
-showQuestions()
-let scoreElement = document.getElementById("score")
-let userAnswer = null
-let nextQuestionButton = document.getElementById("nextBtn")
-let finishQuizButton = document.getElementById("finishQuiz")
-let quizContainer = document.getElementById("quiz-container")
-let restartQuizButton = document.getElementById("restartQuiz")
-let resultContainer = document.getElementById("result-container")
 
 function saveAnswer(event) {
-console.log(event.target)
+  nextQuestionButton.disabled = false;
+  userAnswer = event.target.textContent;
 
-nextQuestionButton.disabled = false
-event.target.classList.add("active")
-event.target.classList.remove("option")
-
-let options = document.querySelectorAll(".option");
-options.forEach((element) => {
-    if (event.target !== element) {
-        element.classList.remove("active")
-    }
-})
-
-
-
-console.log(options)
-
-
-userAnswer = event.target.innerHTML
+  document.querySelectorAll(".option").forEach(el => {
+    el.classList.remove("active");
+  });
+  event.target.classList.add("active");
 }
 
 function incrementQuestion() {
-let nextQuestionButton = document.getElementById("nextBtn")
+  if (userAnswer == questions[currentQuestion].correctAnswer) {
+    score += 10;
+  }
 
-console.log(userAnswer)
-if (userAnswer == questions[currentQuestion].correctAnswer) {
-    score = score + 10
-}
-currentQuestion++
-if (currentQuestion === questions.length - 1) {
-    nextQuestionButton.disabled = true
-    nextQuestionButton.style.display = "none"
-    finishQuizButton.style.display = "block"
-}
-scoreElement.textContent = score
-showQuestions()
-nextQuestionButton.disabled = true
-}
+  currentQuestion++;
+  userAnswer = null;
 
+  if (currentQuestion === questions.length - 1) {
+    nextQuestionButton.style.display = "none";
+    finishQuizButton.style.display = "block";
+  }
+
+  scoreElement.textContent = score;
+  showQuestions();
+  nextQuestionButton.disabled = true;
+}
 
 function finishQuiz() {
-if (userAnswer == questions[currentQuestion].correctAnswer) {
-    score = score + 10
-}
-scoreElement.textContent = score
-quizContainer.style.display = 'none'
-restartQuizButton.style.display = "block"
-resultContainer.style.display = "block"
+  if (userAnswer == questions[currentQuestion].correctAnswer) {
+    score += 10;
+  }
+
+  scoreElement.textContent = score;
+  quizContainer.style.display = 'none';
+  resultContainer.style.display = 'block';
+  restartQuizButton.style.display = "block";
 }
 
 function restartQuiz() {
-quizContainer.style.display = 'block'
-currentQuestion = 0
-showQuestions()
-score = 0
-scoreElement.textContent = score
-nextQuestionButton.style.display = "block"
-nextQuestionButton.disabled = true
-restartQuizButton.style.display = "none"
-finishQuizButton.style.display = "none"
+  currentQuestion = 0;
+  score = 0;
+  userAnswer = null;
+  scoreElement.textContent = score;
 
+  quizContainer.style.display = 'block';
+  resultContainer.style.display = 'none';
+  finishQuizButton.style.display = "none";
+  nextQuestionButton.style.display = "block";
+  nextQuestionButton.disabled = true;
+
+  showQuestions();
 }
+
+showQuestions();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// const questions = [
+//     {
+//       question: "Which language is mostly used for frontend web development?",
+//       options: ["Python", "Java", "HTML", "C++"],
+//       correctAnswer: "HTML"
+//     },
+//     {
+//       question: "What does CSS stand for?",
+//       options: [
+//         "Computer Style Sheet",
+//         "Creative Style Sheet",
+//         "Cascading Style Sheets",
+//         "Colorful Style Sheet"
+//       ],
+//       correctAnswer: "Cascading Style Sheets"
+//     },
+//     {
+//       question: "Who is the founder of Microsoft?",
+//       options: ["Steve Jobs", "Mark Zuckerberg", "Bill Gates", "Elon Musk"],
+//       correctAnswer: "Bill Gates"
+//     },
+//     {
+//       question: "Which tag is used to link CSS in HTML?",
+//       options: ["<css>", "<style>", "<link>", "<script>"],
+//       correctAnswer: "<link>"
+//     },
+//     {
+//       question: "What does DOM stand for in JavaScript?",
+//       options: [
+//         "Document Object Model",
+//         "Data Object Management",
+//         "Digital Output Mode",
+//         "Developer Open Module"
+//       ],
+//       correctAnswer: "Document Object Model"
+//     }
+//   ];
+  
+//   let currentQuestion = 0;
+//   let score = 0;
+  
+//   const startBtn = document.getElementById("start-btn");
+//   const quizContainer = document.getElementById("quiz-container");
+//   const startScreen = document.getElementById("start-screen");
+//   const resultScreen = document.getElementById("result-screen");
+//   const questionText = document.getElementById("question-text");
+//   const optionsBox = document.getElementById("options");
+//   const nextBtn = document.getElementById("next-btn");
+//   const scoreText = document.getElementById("score-text");
+  
+//   startBtn.addEventListener("click", () => {
+//     startScreen.classList.add("hide");
+//     quizContainer.classList.remove("hide");
+//     showQuestion();
+//   });
+  
+//   nextBtn.addEventListener("click", () => {
+//     currentQuestion++;
+//     if (currentQuestion < questions.length) {
+//       showQuestion();
+//     } else {
+//       showResult();
+//     }
+//   });
+  
+//   function showQuestion() {
+//     resetState();
+//     const question = questions[currentQuestion];
+//     questionText.textContent = question.question;
+  
+//     question.options.forEach((option) => {
+//       const btn = document.createElement("button");
+//       btn.textContent = option;
+//       btn.classList.add("option-btn");
+//       btn.addEventListener("click", () => selectAnswer(btn, option, question.correctAnswer));
+//       optionsBox.appendChild(btn);
+//     });
+//   }
+  
+//   function resetState() {
+//     nextBtn.style.display = "none";
+//     optionsBox.innerHTML = "";
+//   }
+  
+//   function selectAnswer(btn, selected, correct) {
+//     const allBtns = document.querySelectorAll(".option-btn");
+//     allBtns.forEach((b) => b.disabled = true);
+  
+//     if (selected === correct) {
+//       btn.classList.add("correct");
+//       score++;
+//     } else {
+//       btn.classList.add("wrong");
+//       allBtns.forEach((b) => {
+//         if (b.textContent === correct) {
+//           b.classList.add("correct");
+//         }
+//       });
+//     }
+  
+//     nextBtn.style.display = "block";
+//   }
+  
+//   function showResult() {
+//     quizContainer.classList.add("hide");
+//     resultScreen.classList.remove("hide");
+//     scoreText.textContent = `You scored ${score} out of ${questions.length}`;
+//   }
